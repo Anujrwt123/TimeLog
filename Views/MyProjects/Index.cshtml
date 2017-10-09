@@ -1,0 +1,327 @@
+﻿@model IEnumerable<demoPro.Models.Project>
+
+@{
+    ViewBag.Title = "Index";
+}
+<br />
+<br />
+@*<div class="row form-group">
+    <div class="col-md-12">
+        <input type="button" value="Create" placeholder="Create" data-toggle="modal" data-target="#myModal" class="btn btn-primary" />
+    </div>
+</div>*@
+   
+<div class="row form-group">
+        <div class="col-md-4">
+            <div id="mypro">
+                @Html.Action("ChangeDropdown")
+                @*<select class="form-control">
+                    <option>My Projects</option>
+                </select>*@
+            </div>
+        </div>
+        <div class="col-md-4" >
+            <select id="Actives" onchange="ChangeMyPorject('Actives')" class="form-control">
+                <option value="0">Active Projects</option>
+                @foreach (var x in ViewBag.ActiveProjects)
+                {
+                    <option value="@x.Lead_ID">@x.Project_Desc (@x.Customer) - @x.Consultant </option>
+                }
+            </select>
+        </div>
+        
+        <div class="col-md-4">
+            <select id="allPro" class="form-control" onchange="ChangeMyPorject('allPro')">
+                <option value="0">All Projects</option>
+                @foreach (var x in ViewBag.ALLProjects)
+                {
+                    <option value="@x.Lead_ID">@x.Project_Desc (@x.Customer) |@x.Application - @x.Consultant </option>
+                }
+            </select>
+        </div>
+</div>
+
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Create</h4>
+                </div>
+                <div class="modal-body form-group">
+
+                     
+                    <div class="row form-group">
+                        <div class="col-sm-6">Name</div>
+                        <div class="col-sm-6"><input type="text" id="Name" name="Name" class="form-control"/></div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-sm-6">Description</div>
+                        <div class="col-sm-6"><input type="text" id="Description" name="Description" class="form-control" /></div>
+                    </div>
+
+
+                    <p>@*@Html.Action("Create", "MyProjects")*@</p>
+                </div>
+                <div class="modal-footer">
+                    @*<input type="submit" value="Save" placeholder="Save" />*@
+                    <button type="button" class="btn btn-success" onclick="Saveproj()">Save</button>
+                </div>
+
+            </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="myModal2" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Comment</h4>
+            </div>
+            <div class="modal-body form-group">
+
+                @*<textarea class="form-control" rows="5" id="comment" placeholder="Comment.." style="max-width:100%"></textarea>*@
+                @Html.Action("EndDay")
+            </div>
+            <div class="modal-footer">
+                @*<input type="submit" value="Save" placeholder="Save" />*@
+                <button type="button" class="btn btn-success" onclick="SaveCmmntproj()">Save</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <button type="button" style="display:none; margin-left:1000px;" onclick="Commentbtn()" id="EndBtn" class="btn btn-success">End Day</button>
+    <div id="proList" ></div>
+
+</div>
+<script>
+
+    function Saveproj()
+    {
+        debugger;
+        var name = $("#Name").val();
+        var Desc = $("#Description").val();
+        var obj = new Object();
+        obj.Name = name;
+        obj.Description = Desc;
+
+        $.ajax({
+            url: "/MyProjects/Create?Name="+name+"&Desc="+Desc,
+            type: "Post",
+            success: function (data) {
+                if (data == "ok")
+                {
+                    $('#myModal').modal('hide');
+                    Changedrop();
+                }
+            },
+            error: function (err)
+            {
+
+            }
+
+
+
+        })
+
+
+    }
+
+        
+</script>
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        proList();
+    })
+
+    function Changedrop() {
+        $.ajax({
+            url: "/MyProjects/ChangeDropdown",
+            success: function (data) {
+                $('#mypro').html(data);
+            },
+            error: function () { }
+        })
+    }
+
+    function proList() {
+        var value = $('#Actives').val();
+        $.ajax({
+            url: "/MyProjects/GetMyProjetcs",
+            type: "Post",
+            data: { value: value },
+            success: function (data) {
+                $('#proList').html(data);
+                $("#EndBtn").show();    
+            },
+            error: function () { }
+        })
+    }
+
+    function checkComment() {
+        var isActive = $('#activeProName').html();
+        if (isActive) {
+            firstPro = true;
+             
+            $('#myModal2').modal('show');
+        }
+        else {
+            firstPro = false;
+            ChangeMyPorject();
+        }
+    }
+
+
+    var firstPro = true;
+
+    function ChangeMyPorject(select) {
+        debugger;
+        var value = $('#' + select).val();
+        //var value = $('#myporId').val();
+        var cc = $("#comment").val();
+        var Comment = "";
+        if (cc != undefined || cc != null || cc != "")
+        {
+            Comment = cc;
+        }
+
+        $.ajax({
+            url: "/MyProjects/StartEndProject",
+            type: "Post",
+            data: { value: value,Comment: Comment },
+            success: function (data) {
+                $('#proList').html(data);
+                $('#myModal2').modal('hide');
+                Changedrop();
+            },
+            error: function () { }
+        })
+    }
+
+
+    function EndProject() {
+        debugger;
+        var value = $('#myporId').val();
+        var cc = $("#comment").val();
+        var Comment = "";
+        if (cc != undefined || cc != null || cc != "") {
+            Comment = cc;
+        }
+
+        $.ajax({
+            url: "/MyProjects/EndProject",
+            type: "Post",
+            data: { value: value, Comment: Comment },
+            success: function (data) {
+                $('#proList').html(data);
+                $("#myModal2").hide();
+                $('#myModal2').modal('hide');
+            },
+            error: function () { }
+        })
+    }
+
+
+    function SaveCmmntproj()
+    {
+        debugger;
+        var Id = $(this).closest('tr').find("#Id").val();
+        debugger;
+
+        $("#mytable tbody tr").each(function () {
+
+            // Within tr we find the last td child element and get content
+            var Id = $(this).closest('tr').find('#tduid').text();
+            
+            //var Id = $(this).closest('tr').find("#Id").val();
+            //var AdjustTime = $(this).closest('tr').find("#AdjustTime").text();
+           var AdjustTime= $(this).closest('tr').find('#AdjustTime').val()
+
+            var obj = new Object();
+            obj.Id = Id;
+            obj.AdjustTime = AdjustTime;
+
+            $.ajax({
+                        url: "/Myprojects/SaveEndDayprojlist?ID="+Id+"&AdjustTime="+AdjustTime,
+                        type: "Post",
+                        success: function (data)
+                        {
+                            if (data == "ok")
+                            {
+                                //alert("Changes has been Saved");
+                            }
+                        },
+                        error: function () { }
+
+                    })
+
+
+
+            //alert(tuid);
+            //alert($(this).find("td:last-child").html());
+        });
+
+        //$(Id).each(function ()
+        //{
+        //    var trid = $this.closest('tr').attr('Id');
+        //    //var Id = $(this).closest('tr').find("#Id").val();
+        //    var Size = $(this).closest('tr').find("#AdjustTime").val();
+        //    var index = $(this).index();
+
+        //    var obj = new Object;
+        //    obj.ID = Id;
+        //    obj.AdjustTime = AdjustTime;
+        //    obj.Cost = Cost;
+        //    obj.Size = Size;
+
+        //    $.ajax({
+        //        url: "/Myprojects/SaveEndDayprojlist",
+        //        type: "Post",
+        //        data: { model: obj },
+        //        success: function (data) { },
+        //        error: function () { }
+
+        //    })
+
+        //})
+
+
+        if (firstPro)
+            ChangeMyPorject();
+            
+        else
+            EndProject();
+
+        
+        $("#comment").val('');
+        $("#myModal2").hide();
+        proList();
+    }
+
+    function Commentbtn()
+    {
+        //alert("btn called");
+        debugger;
+        firstPro = false;
+        $('#myModal2').modal('show');
+
+    }
+
+    
+</script>

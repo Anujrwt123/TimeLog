@@ -1,0 +1,53 @@
+﻿@{
+    Layout = null;
+}
+
+@model IEnumerable<demoPro.Models.MyProject>
+
+
+<div class="row">
+    <div class="col-md-12"><h2 id="activeProName">Current Project : @ViewBag.Name</h2></div>
+  
+</div>
+
+
+<table class="table table-bordered table-condensed table-hover table-striped">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StartTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EndTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Active)
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndTime)
+            </td>
+            <td>
+    @Html.DisplayFor(modelItem => item.Active)
+</td>
+        </tr>
+    }
+</table>

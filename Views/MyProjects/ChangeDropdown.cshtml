@@ -1,0 +1,12 @@
+﻿@{
+    Layout = null;
+}
+
+
+<select id="myporId" onchange="ChangeMyPorject('myporId')" class="form-control">
+    <option value="0">My Projects</option>
+    @foreach (var x in ViewBag.MyProjects)
+    {   
+        <option value="@x.Id">@x.Name</option>
+    }
+</select>

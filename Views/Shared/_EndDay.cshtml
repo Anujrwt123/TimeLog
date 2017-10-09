@@ -1,0 +1,48 @@
+﻿
+@model IEnumerable<demoPro.ViewModel.EndDayProjectViewModel>
+
+<style>
+    .ScrollStyle
+{
+    max-height: 442px;
+    overflow-y: scroll;
+}
+</style>
+
+<div class="ScrollStyle">
+    <table id="mytable" class="table table-bordered table-condensed table-hover table-striped">
+        <tr>
+
+            <th>@Html.DisplayNameFor(model => model.ID)</th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TimeTaken)
+            </th>
+            <th>@Html.DisplayNameFor(model => model.AdjustTime)</th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td id="tduid">@Html.DisplayFor(modelItem => item.ID, new { @class = new { @class = "tosave1" } })</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TimeTaken)
+                </td>
+                @*<td>@Html.EditorFor(modelItem => item.AdjustTime)</td>*@
+                <td id="Adjust"><input type="text" id="AdjustTime" value="@item.AdjustTime" /></td>
+
+            </tr>
+        }
+
+
+    </table>
+</div>
+<script>
+
+</script>
